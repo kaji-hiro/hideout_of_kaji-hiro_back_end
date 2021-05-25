@@ -3,20 +3,19 @@ jobs:
   build:
     parallelism: 3
     docker:
-      - image: circleci/ruby:3.0.1
-      - image: circleci/postgres
-        name: "db"
+      - image: circleci/ruby:2.4.2-jessie-node
         environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: myapp_test
-          POSTGRES_HOST_AUTH_METHOD: trust
-    environment:
-      BUNDLE_JOBS: 4
-      BUNDLE_RETRY: 3
-      PGHOST: 127.0.0.1
-      PGUSER: postgres
-      PGPASSWORD: ""
-      RAILS_ENV: test
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+          PGHOST: 127.0.0.1
+          PGUSER: circleci-demo-ruby
+          RAILS_ENV: test
+      - image: circleci/postgres:9.5-alpine
+        environment:
+          POSTGRES_USER: circleci-demo-ruby
+          POSTGRES_DB: rails_blog
+          POSTGRES_PASSWORD: ""
     steps:
       - checkout
 
@@ -26,36 +25,29 @@ jobs:
 
       - restore_cache:
           keys:
-            - rails-bundle-v2-{{ checksum "Gemfile.lock" }}
-            - rails-bundle-v2-
+            - rails-demo-bundle-v2-{{ checksum "Gemfile.lock" }}
+            - rails-demo-bundle-v2-
 
       - run:
-          name: bundle install
+          name: バンドル インストール
           command: bundle check --path vendor/bundle || bundle install --deployment
 
       - save_cache:
-          key: rails-bundle-v2-{{ checksum "Gemfile.lock" }}
+          key: rails-demo-bundle-v2-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
 
       - run:
-          name: DBの待機
+          name: DB の待機
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run:
-          name: DBのSETUP
+          name: データベースのセットアップ
           command: bin/rails db:schema:load --trace
 
       - run:
-          name: minitestの実行
+          name: RSpec の並列実行
           command: bundle exec rails t
-
-      - store_artifacts:
-          path: coverage
 
       - store_test_results:
           path: test_results
-
-      - run:
-          name: rubocopの実行
-          command: bundle exec rubocop
