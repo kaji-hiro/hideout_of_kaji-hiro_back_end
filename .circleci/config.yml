@@ -17,6 +17,7 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_DB: test
           POSTGRES_PASSWORD: password
+          POSTGRES_HOST_AUTH_METHOD: trust
     steps:
       - checkout
 
@@ -40,7 +41,7 @@ jobs:
 
       - run:
           name: DBの待機
-          command: dockerize -wait tcp://0.0.0.0:5432 -timeout 1m
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run:
           name: DBのSETUP
