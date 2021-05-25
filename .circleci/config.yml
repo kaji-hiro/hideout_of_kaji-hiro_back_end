@@ -1,0 +1,60 @@
+version: 2
+jobs:
+  build:
+    parallelism: 3
+    docker:
+      - image: circleci/ruby:3.0.1
+        environment:
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+          PGHOST: 127.0.0.1
+          PGUSER: circleci-rails
+          RAILS_ENV: test
+      - image: circleci/postgres:9.5-alpine
+        environment:
+          POSTGRES_USER: circleci-rails
+          POSTGRES_DB: rails
+          POSTGRES_PASSWORD: ""
+    steps:
+      - checkout
+
+      - run:
+          name: Bundler の指定
+          command: bundle -v
+
+      - restore_cache:
+          keys:
+            - rails-bundle-v2-{{ checksum "Gemfile.lock" }}
+            - rails-bundle-v2-
+
+      - run:
+          name: bundle install
+          command: bundle check --path vendor/bundle || bundle install --deployment
+
+      - save_cache:
+          key: rails-bundle-v2-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      - run:
+          name: DBの待機
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - run:
+          name: DBのSETUP
+          command: bin/rails db:schema:load --trace
+
+      - run:
+          name: minitestの実行
+          command: bundle exec rails t
+
+      - store_artifacts:
+          path: coverage
+
+      - store_test_results:
+          path: test_results
+
+      - run:
+          name: rubocopの実行
+          command: bundle exec rubocop
