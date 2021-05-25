@@ -42,7 +42,7 @@ jobs:
 
       - run:
           name: データベースのセットアップ
-          command: bin/rails db:schema:load --trace
+          command: bin/rails db:setup --trace
 
       - run:
           name: RSpec の並列実行
