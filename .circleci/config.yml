@@ -11,12 +11,12 @@ jobs:
           PGHOST: 127.0.0.1
           PGUSER: circleci-rails
           RAILS_ENV: test
-      - image: circleci/postgres
+      - image: circleci/postgres:latest
         name: "db"
         environment:
-          POSTGRES_USER: circleci-rails
-          POSTGRES_DB: rails
-          POSTGRES_PASSWORD: ""
+          POSTGRES_USER: root
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: password
     steps:
       - checkout
 
