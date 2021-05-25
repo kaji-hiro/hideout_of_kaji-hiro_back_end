@@ -4,13 +4,6 @@ jobs:
     parallelism: 3
     docker:
       - image: circleci/ruby:3.0.1
-        environment:
-          BUNDLE_JOBS: 3
-          BUNDLE_RETRY: 3
-          BUNDLE_PATH: vendor/bundle
-          PGHOST: 127.0.0.1
-          PGUSER: circleci-rails
-          RAILS_ENV: test
       - image: circleci/postgres:latest
         name: "db"
         environment:
@@ -18,6 +11,13 @@ jobs:
           POSTGRES_DB: test
           POSTGRES_PASSWORD: password
           POSTGRES_HOST_AUTH_METHOD: trust
+    environment:
+      BUNDLE_JOBS: 3
+      BUNDLE_RETRY: 3
+      BUNDLE_PATH: vendor/bundle
+      PGHOST: 127.0.0.1
+      PGUSER: root
+      RAILS_ENV: test
     steps:
       - checkout
 
