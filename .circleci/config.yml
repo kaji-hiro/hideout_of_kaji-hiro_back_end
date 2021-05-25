@@ -12,6 +12,7 @@ jobs:
           PGUSER: circleci-rails
           RAILS_ENV: test
       - image: circleci/postgres:9.5-alpine
+        name: "db"
         environment:
           POSTGRES_USER: circleci-rails
           POSTGRES_DB: rails
