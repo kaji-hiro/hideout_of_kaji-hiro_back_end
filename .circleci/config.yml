@@ -28,8 +28,8 @@ jobs:
             - rails-demo-bundle-v2-
 
       - run:
-          name: バンドル インストール
-          command: bundle check --path vendor/bundle || bundle install --deployment
+          name: bundle install
+          command: bundle config set --local path 'vendor/bundle' || bundle check --path || bundle install --deployment
 
       - save_cache:
           key: rails-demo-bundle-v2-{{ checksum "Gemfile.lock" }}
