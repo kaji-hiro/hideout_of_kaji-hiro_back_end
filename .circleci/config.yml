@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    parallelism: 1
+    parallelism: 3
     docker:
       - image: circleci/ruby:3.0.1
         environment:
@@ -53,4 +53,4 @@ jobs:
 
       - run:
           name: 静的解析の実行
-          command: bundle exec rubocop
+          command: bundle exec rubocop -c .rubocop.yml
