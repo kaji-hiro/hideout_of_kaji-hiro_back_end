@@ -37,6 +37,10 @@ jobs:
             - vendor/bundle
 
       - run:
+          name: 静的解析の実行
+          command: bundle exec rubocop -c .rubocop.yml
+
+      - run:
           name: DB の待機
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
@@ -50,7 +54,3 @@ jobs:
 
       - store_artifacts:
           path: coverage
-
-      - run:
-          name: 静的解析の実行
-          command: bundle exec rubocop -c .rubocop.yml
